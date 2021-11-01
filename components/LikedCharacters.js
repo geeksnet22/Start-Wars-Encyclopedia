@@ -13,6 +13,6 @@ export default function LikedCharacters() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#54ad7a",
+    backgroundColor: "#1f1f1f",
   },
 });

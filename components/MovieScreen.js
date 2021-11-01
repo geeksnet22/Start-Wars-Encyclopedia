@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { gql, useQuery } from "@apollo/client";
 import { useNavigation, useRoute } from "@react-navigation/core";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export const MOVIE_DETAILS = gql`
   query MovieDetails($id: ID!) {
@@ -54,6 +55,20 @@ export default function MovieScreen() {
     </TouchableOpacity>
   );
 
+  if (loading)
+    return (
+      <View style={styles.container}>
+        <Text style={styles.body}>Loading...</Text>
+      </View>
+    );
+
+  if (error)
+    return (
+      <View style={styles.container}>
+        <Text style={styles.body}>Oops, Something went wrong...</Text>
+      </View>
+    );
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{data?.film.title}</Text>
@@ -74,11 +89,13 @@ export default function MovieScreen() {
       >{`Total vehicles count: ${data?.film.vehicleConnection.totalCount}`}</Text>
       <View>
         <Text style={styles.body}>Characters</Text>
-        <FlatList
-          data={data?.film.characterConnection.characters}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
+        <SafeAreaView edges={["bottom", "left", "right"]}>
+          <FlatList
+            data={data?.film.characterConnection.characters}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
+        </SafeAreaView>
       </View>
     </View>
   );
@@ -87,7 +104,7 @@ export default function MovieScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#2e4558",
+    backgroundColor: "#1f1f1f",
     padding: 10,
   },
   title: {
@@ -102,7 +119,7 @@ const styles = StyleSheet.create({
   nameContainer: {
     marginVertical: 5,
     borderRadius: 10,
-    backgroundColor: "#8a8a8a",
+    backgroundColor: "#373738",
     padding: 5,
     alignSelf: "flex-start",
   },
