@@ -87,9 +87,12 @@ export default function MovieScreen() {
       <Text
         style={styles.body}
       >{`Total vehicles count: ${data?.film.vehicleConnection.totalCount}`}</Text>
-      <View>
+      <View style={styles.listViewContainer}>
         <Text style={styles.body}>Characters</Text>
-        <SafeAreaView edges={["bottom", "left", "right"]}>
+        <SafeAreaView
+          edges={["bottom", "left", "right"]}
+          style={styles.listContainer}
+        >
           <FlatList
             data={data?.film.characterConnection.characters}
             renderItem={renderItem}
@@ -106,6 +109,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#1f1f1f",
     padding: 10,
+  },
+  listViewContainer: {
+    flex: 1,
+  },
+  listContainer: {
+    flex: 1,
   },
   title: {
     fontSize: 20,

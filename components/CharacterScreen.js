@@ -29,6 +29,7 @@ const CHARACTER_DETAILS = gql`
     }
   }
 `;
+
 export default function CharacterScreen() {
   const route = useRoute();
   const navigation = useNavigation();
@@ -62,21 +63,40 @@ export default function CharacterScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{route.params?.name}</Text>
+      <View style={{ flexDirection: "row" }}>
+        <Text style={styles.title}>{route.params?.name}</Text>
+        <TouchableOpacity>
+          <View
+            style={{
+              marginLeft: 10,
+              paddingHorizontal: 5,
+              borderRadius: 10,
+              backgroundColor: "#373738",
+            }}
+          >
+            <Text style={styles.body}>Like</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.body}>{`Birth year: ${data?.person.birthYear}`}</Text>
       <Text style={styles.body}>{`Height: ${data?.person.height}`}</Text>
       <Text style={styles.body}>{`Mass: ${data?.person.mass}`}</Text>
       <Text
         style={styles.body}
       >{`Home world: ${data?.person.homeworld.name}`}</Text>
-      <Text style={styles.body}>Movies</Text>
-      <SafeAreaView edges={["bottom", "left", "right"]}>
-        <FlatList
-          data={data?.person.filmConnection.films}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
-      </SafeAreaView>
+      <View style={styles.listViewContainer}>
+        <Text style={styles.body}>Movies</Text>
+        <SafeAreaView
+          edges={["bottom", "left", "right"]}
+          style={styles.listContainer}
+        >
+          <FlatList
+            data={data?.person.filmConnection.films}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
+        </SafeAreaView>
+      </View>
     </View>
   );
 }
@@ -86,6 +106,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#1f1f1f",
     padding: 10,
+  },
+  listViewContainer: {
+    flex: 1,
+  },
+  listContainer: {
+    flex: 1,
   },
   title: {
     fontSize: 20,

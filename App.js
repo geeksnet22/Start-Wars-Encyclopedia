@@ -1,5 +1,10 @@
 import React from "react";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  gql,
+} from "@apollo/client";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./components/HomeScreen";
@@ -9,7 +14,14 @@ import CharacterScreen from "./components/CharacterScreen";
 const client = new ApolloClient({
   uri: "https://swapi-graphql.netlify.app/.netlify/functions/index",
   cache: new InMemoryCache(),
+  typeDefs,
 });
+
+export const typeDefs = gql`
+  extend type Query {
+    likedCharacters: [ID!]
+  }
+`;
 
 const Stack = createNativeStackNavigator();
 

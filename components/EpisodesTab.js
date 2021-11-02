@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
   },
   listView: {
     marginRight: 10,
+    flex: 1,
   },
   episodeCard: {
     padding: 10,
