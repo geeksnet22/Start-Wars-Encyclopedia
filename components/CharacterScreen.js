@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/core";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { gql, useQuery } from "@apollo/client";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -33,9 +34,22 @@ const CHARACTER_DETAILS = gql`
 export default function CharacterScreen() {
   const route = useRoute();
   const navigation = useNavigation();
+  const [likedCharacters, setLikedCharacters] = useState({});
   const { loading, error, data } = useQuery(CHARACTER_DETAILS, {
     variables: { id: route.params?.id },
   });
+  const [isLiked, setIsLiked] = useState(false);
+
+  useEffect(() => {
+    // AsyncStorage.clear();
+    AsyncStorage.getItem("likedCharacters").then((likedCharacters) => {
+      if (likedCharacters) {
+        const characters = JSON.parse(likedCharacters);
+        setLikedCharacters(characters);
+        setIsLiked(route.params?.id in characters);
+      }
+    });
+  }, [route.params, route.params?.id]);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -46,6 +60,27 @@ export default function CharacterScreen() {
       </View>
     </TouchableOpacity>
   );
+
+  const addToLikedCharacters = async () => {
+    AsyncStorage.getItem("likedCharacters").then((likedCharacters) => {
+      const characters = likedCharacters ? JSON.parse(likedCharacters) : {};
+      characters[route.params?.id] = route.params?.name;
+      setLikedCharacters(characters);
+      setIsLiked(true);
+      AsyncStorage.setItem("likedCharacters", JSON.stringify(characters));
+    });
+  };
+
+  const removeFromLikedCharacters = async () => {
+    AsyncStorage.getItem("likedCharacters").then((likedCharacters) => {
+      if (likedCharacters) {
+        const characters = JSON.parse(likedCharacters);
+        delete characters[route.params.id];
+        setIsLiked(false);
+        AsyncStorage.setItem("likedCharacters", JSON.stringify(characters));
+      }
+    });
+  };
 
   if (loading)
     return (
@@ -65,16 +100,11 @@ export default function CharacterScreen() {
     <View style={styles.container}>
       <View style={{ flexDirection: "row" }}>
         <Text style={styles.title}>{route.params?.name}</Text>
-        <TouchableOpacity>
-          <View
-            style={{
-              marginLeft: 10,
-              paddingHorizontal: 5,
-              borderRadius: 10,
-              backgroundColor: "#373738",
-            }}
-          >
-            <Text style={styles.body}>Like</Text>
+        <TouchableOpacity
+          onPress={isLiked ? removeFromLikedCharacters : addToLikedCharacters}
+        >
+          <View style={styles.likeButton}>
+            <Text style={styles.body}>{isLiked ? "Unlike" : "Like"}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -128,5 +158,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#373738",
     padding: 5,
     alignSelf: "flex-start",
+  },
+  likeButton: {
+    marginLeft: 10,
+    paddingHorizontal: 5,
+    borderRadius: 10,
+    backgroundColor: "#373738",
   },
 });
